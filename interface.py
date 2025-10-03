@@ -10,7 +10,7 @@ import argparse
 import sys
 from typing import List, Dict
 
-from model_loader import get_chat_backend, iterate_remote_backends, ModelPendingDeployError
+from model_loader import get_chat_backend, ModelPendingDeployError
 import os
 from memory import SlidingWindowMemory
 
@@ -89,32 +89,15 @@ def main():
             else:
                 reply = backend.generate(messages)  # type: ignore
         except ModelPendingDeployError as warm_e:
-            reply = None
-            print(f"[Info] Primary remote model warming too long: {warm_e}. Trying alternate remote models...")
-            for alt_backend in iterate_remote_backends(explicit_model=args.remote_model):
-                if alt_backend.model == getattr(backend, 'model', None):
-                    continue
+            if args.remote_only:
+                reply = f"[Error] Remote model still warming: {warm_e}. Try again shortly." 
+            else:
+                print("[Info] Remote model warming too long; switching to local fallback.")
+                backend = get_chat_backend(prefer_remote=False, local_model=args.local_model)
                 try:
-                    reply = alt_backend.generate(messages, stream=args.stream)  # type: ignore
-                    backend = alt_backend
-                    print(f"[Info] Switched to remote model: {alt_backend.model}")
-                    break
-                except ModelPendingDeployError as e2:
-                    print(f"[Info] Still warming: {alt_backend.model} -> {e2}")
-                    continue
-                except Exception as e_any:
-                    print(f"[Info] Alternate failed: {alt_backend.model} -> {e_any}")
-                    continue
-            if reply is None:
-                if args.remote_only:
-                    reply = "[Error] All remote models warming or unavailable. Try again shortly."
-                else:
-                    print("[Info] Falling back to local model.")
-                    backend = get_chat_backend(prefer_remote=False, local_model=args.local_model)
-                    try:
-                        reply = backend.generate(messages)  # type: ignore
-                    except Exception as final_e:
-                        reply = f"[Error during local fallback generation: {final_e}]"
+                    reply = backend.generate(messages)  # type: ignore
+                except Exception as final_e:
+                    reply = f"[Error during local fallback generation: {final_e}]"
         except Exception as e:
             reply = f"[Error during generation: {e}]"
 

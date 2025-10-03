@@ -52,14 +52,7 @@ except ImportError:
     pipeline = None  # type: ignore
 
 HF_ROUTER_BASE = "https://router.huggingface.co/v1"
-DEFAULT_REMOTE_MODEL = "google/gemma-3-27b-it:featherless-ai"
-# Ordered list of fallback remote chat-capable models (smaller first for faster warm load)
-REMOTE_MODEL_CANDIDATES = [
-    "meta-llama/Llama-3.2-3B-Instruct",
-    "HuggingFaceH4/zephyr-7b-beta",
-    "mistralai/Mistral-7B-Instruct-v0.3",
-    DEFAULT_REMOTE_MODEL,  # keep requested one in list too
-]
+DEFAULT_REMOTE_MODEL = "meta-llama/Llama-3.2-3B-Instruct"
 class ModelPendingDeployError(RuntimeError):
     """Raised when the remote model remains in warming state after retries."""
     pass
@@ -196,19 +189,4 @@ def get_chat_backend(prefer_remote: bool = True, remote_model: Optional[str] = N
     return load_local_pipeline(model_name=local_model or DEFAULT_LOCAL_MODEL)
 
 
-def iterate_remote_backends(explicit_model: Optional[str] = None):
-    """Yield RemoteChatClient objects for candidate models (fastest first)."""
-    seen = set()
-    order = []
-    if explicit_model:
-        order.append(explicit_model)
-    order.extend(REMOTE_MODEL_CANDIDATES)
-    for m in order:
-        if m in seen:
-            continue
-        seen.add(m)
-        try:
-            yield load_remote_client(model=m)
-        except Exception as e:
-            print(f"[Remote-Fallback] Skipping model '{m}': {e}")
-            continue
+## Fallback iterator removed: single remote model only per user request.

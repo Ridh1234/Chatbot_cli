@@ -1,6 +1,6 @@
 # CLI Chatbot (HF Router + Local Fallback)
 
-A lightweight command-line chatbot that first attempts to use Hugging Face's Router (OpenAI-compatible endpoint) with a remote model (`google/gemma-3-27b-it:featherless-ai`) and falls back to a small local model (`distilgpt2`) if remote inference is unavailable. Maintains a sliding window conversation memory.
+A lightweight command-line chatbot that first attempts to use Hugging Face's Router (OpenAI-compatible endpoint) with the remote model (`meta-llama/Llama-3.2-3B-Instruct`) and falls back to a small local model (`distilgpt2`) if remote inference is unavailable. Maintains a sliding window conversation memory.
 
 ## Features
 - Remote inference via Hugging Face router (OpenAI-compatible API surface)
@@ -27,9 +27,9 @@ Remote (default attempt):
 ```powershell
 python interface.py
 ```
-Force remote model / override:
+Force remote (same default model):
 ```powershell
-python interface.py --remote --remote-model google/gemma-3-27b-it:featherless-ai
+python interface.py --remote --remote-model meta-llama/Llama-3.2-3B-Instruct
 ```
 Local only (simulate remote failure by unsetting token):
 ```powershell
