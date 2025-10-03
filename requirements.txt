@@ -1,0 +1,10 @@
+openai
+transformers
+accelerate
+torch
+rich
+
+# If torch binary fails, try CPU-specific index:
+# pip install --upgrade pip
+# pip install torch --index-url https://download.pytorch.org/whl/cpu
+

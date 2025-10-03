@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual env
+.venv/
+venv/
+.env
+.venv312/
+
+# Python build / packaging
+build/
+dist/
+*.egg-info/
+
+# Hugging Face / model caches
+hub/
+huggingface/
+*.safetensors
+*.bin
+*.pt
+*.onnx
+
+# Training / experiment logs
+wandb/
+logs/
+tensorboard/
+
+# Test & coverage artifacts
+.pytest_cache/
+coverage.xml
+htmlcov/
+.coverage*
+
+# Editor
+.vscode/
+.idea/
+
+# Lock / temp
+*.lock
+tmp/
+temp/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs / cache
+*.log
+.cache/
+
+# Model artifacts
+models/
